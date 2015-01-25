@@ -14,11 +14,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.esprit.javaee.project.services.CalculatorServiceRemote;
+
 
 
 
 public class CalculatorApp extends JFrame{
 	
+	private CalculatorServiceRemote proxy = null; 
 	 
 	 private JPanel panel = new JPanel();
 	 private JLabel aLabel = new JLabel("a");
@@ -29,7 +32,13 @@ public class CalculatorApp extends JFrame{
 	 private JButton submitButton = new JButton("result = ");
 	 
 	 public CalculatorApp() {
-		 
+		 try {
+				Context ctx = new InitialContext(); 
+				Object  obj = ctx.lookup("/project-ejb/CalculatorService!org.esprit.javaee.project.services.CalculatorServiceRemote");
+				proxy = (CalculatorServiceRemote) obj;
+			} catch (NamingException e1) {
+				e1.printStackTrace();
+			}
 		 setTitle("Calc");
 		 setDefaultCloseOperation(EXIT_ON_CLOSE);
 		 init();
@@ -60,7 +69,8 @@ public class CalculatorApp extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				int a = Integer.parseInt(aField.getText());
 				int b = Integer.parseInt(bField.getText());
-				int z = a+b;
+				
+				int z = proxy.sum(a, b);
 				resultLabel.setText(String.valueOf(z));
 			}
 		});
